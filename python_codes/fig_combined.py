@@ -93,8 +93,6 @@ def main():
     ax_d.set_yticks([])
     ax_d.set_xlabel(r"$x$"); ax_d.set_ylabel("probability")
     ax_d.set_ylim(top=pt.max() * 1.18)
-    ax_d.text(0.965, 0.93, "shaded: target", transform=ax_d.transAxes,
-              ha="right", va="top", fontsize=fs.FS_ANNOT, color="0.35")
     fs.panel_tag(ax_d, "(a)")
 
     # (b) KLD vs L (log2) -- carries the shared family legend
@@ -107,8 +105,10 @@ def main():
                       color=fs.COLOR[e], label=fs.LABEL[e], capsize=2, lw=fs.LW)
     _log2_yaxis(ax_k)
     ax_k.set_xlabel(r"layers $L$"); ax_k.set_ylabel(r"KLD")
-    ax_k.legend(loc="upper right", ncol=2)
-    fs.panel_tag(ax_k, "(b)", x=0.035, y=0.14)
+    ax_k.legend(loc="lower left", ncol=2, bbox_to_anchor=(0.015, 0.015),
+               fontsize=fs.FS_ANNOT, frameon=False, handlelength=1.5,
+               columnspacing=1.0, handletextpad=0.5)
+    fs.panel_tag(ax_k, "(b)", x=0.93, y=0.94)
 
     fs.save(fig, os.path.join(FIGS, "fig_combined"))
     print("DONE", flush=True)

@@ -29,9 +29,9 @@ def main():
     ax.set_xlabel(r"qubits $N$")
     ax.set_ylabel(r"half-chain $S_{vN}$")
     ax.set_xticks(NS[::2].astype(int) if len(NS) > 8 else NS.astype(int))
-    ax.text(0.035, 0.94, r"$U_S|{+}\rangle^{\otimes N}$",
-            transform=ax.transAxes, fontsize=fs.FS_ANNOT, color="0.35", va="top")
-    ax.legend(loc="lower right", ncol=2)
+    ax.set_ylim(top=ax.get_ylim()[1] * 1.42)
+    ax.legend(loc="upper left", ncol=3, fontsize=fs.FS_ANNOT, frameon=False,
+              handlelength=1.5, columnspacing=1.0, handletextpad=0.5)
     fs.save(fig, os.path.join(FIGS, "fig_svn_scaling"))
     print("DONE", flush=True)
 

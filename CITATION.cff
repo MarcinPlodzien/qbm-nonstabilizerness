@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite the accompanying paper."
-title: "Role of nonstabilizerness for quantum Born-machine generative modeling"
+title: "Role of nonstabilizerness in quantum Born machines"
 authors:
   - family-names: "Płodzień"
     given-names: "Marcin"
@@ -9,7 +9,7 @@ license: MIT
 type: software
 preferred-citation:
   type: article
-  title: "Role of nonstabilizerness for quantum Born-machine generative modeling"
+  title: "Role of nonstabilizerness in quantum Born machines"
   authors:
     - family-names: "Płodzień"
       given-names: "Marcin"

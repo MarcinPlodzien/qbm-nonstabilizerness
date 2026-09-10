@@ -1,9 +1,9 @@
 """
-get_figure_6.py -- reproduce Manuscript Figure 6 (Appendix B): single-layer entangling power S_vN vs N,
-for a single application of each fixed entangler U_S|+>.
-Run: python get_figure_6.py -> figures/fig_svn_scaling.pdf
+get_figure_6.py -- reproduce Manuscript Figure 6 (Appendix B): KLD vs depth for four entanglers on the six 2D
+targets, three independent depth-curriculum chains each (N=10).
+Run: python get_figure_6.py -> figures/fig_twod_chains.pdf
 """
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import fig_svn_scaling
-fig_svn_scaling.main()
+import fig_twod_chains
+fig_twod_chains.main()

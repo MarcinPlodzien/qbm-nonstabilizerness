@@ -25,6 +25,7 @@ import figstyle as fs
 N      = int(os.environ.get("GRID_N", "10"))
 MODEL  = os.environ.get("MODEL", "SK")
 ANSATZ = os.environ.get("ANSATZ", "main")
+L_MAIN = int(os.environ.get("L_MAIN", "12"))   # main-text depth; deeper/shallower runs exist at a few betas
 FAMS   = ["clifford", "doped", "haar", "matchgate"]
 FIGS   = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "figures")
 
@@ -38,7 +39,7 @@ def load():
         if "couplings" in p:
             continue
         z = np.load(p, allow_pickle=True); m = json.loads(str(z["meta"]))
-        if m.get("ansatz") != ANSATZ:
+        if m.get("ansatz") != ANSATZ or int(m.get("L", L_MAIN)) != L_MAIN:
             continue
         fam, r, b = m["entangler"], int(m["realization_idx"]), float(m["beta"])
         kld[fam][b][r] = float(np.median(np.asarray(z["kld"])))
@@ -83,12 +84,22 @@ def main():
     for f in FAMS:
         b2.plot(betas, mmu[f], "-", color=fs.COLOR[f])
     b2.plot(betas, m2m, "--", color="0.25", lw=1.3, label=r"$M_{2,\min}$ (target)")
-    b2.axhline(N - 2, color=fs.GREY, ls=":", lw=1.0)
+    # random-phase references (compute_gibbs_randphase.py): sqrt(q_theta) and sqrt(p_beta)
+    # with i.i.d. uniform phases, lowest-loss Clifford run per disorder realization
+    rp_path = os.path.join(runs_dir(), f"gibbs_randphase__N{N}__{MODEL}.npz")
+    if os.path.exists(rp_path):
+        rp = np.load(rp_path)
+        rb = np.array(sorted(set(rp["beta"].tolist())))
+        rq = np.array([np.mean(rp["m2_randphase_q"][rp["beta"] == x]) for x in rb])
+        rpp = np.array([np.mean(rp["m2_randphase_p"][rp["beta"] == x]) for x in rb])
+        b2.plot(rb, rq, ":", color="k", lw=1.6, label=r"random phases on $q_\theta$")
+        b2.plot(rb, rpp, "-.", color="0.45", lw=1.3, label=r"random phases on $p_\beta$")
+    b2.axhline(N - 2, color=fs.GREY, ls="-", lw=0.8)
     b2.text(0.97, N - 2 - 0.10, r"$N-2$", transform=b2.get_yaxis_transform(),
             ha="right", va="top", fontsize=fs.FS_ANNOT, color="0.35")
     b2.set_ylabel(r"trained $M_2(\psi_\theta)$")
     b2.set_ylim(bottom=0)
-    b2.legend(loc="center right")
+    b2.legend(loc="lower right", bbox_to_anchor=(1.0, 0.10), fontsize=fs.FS_ANNOT)
     fs.panel_tag(b2, "(b)")
 
     # (c) paired difference

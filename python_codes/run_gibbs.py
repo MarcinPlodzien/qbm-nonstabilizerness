@@ -1,5 +1,7 @@
 """
-run_gibbs.py -- Learning spin-glass Gibbs distributions across temperature.
+================================================================================
+ run_gibbs.py -- Learning spin-glass Gibbs distributions across temperature
+================================================================================
 
 PURPOSE
     Test whether the converged loss of a fixed-entangler Born machine depends on
@@ -24,8 +26,8 @@ PROTOCOL
     rotation-angle init reused across every realization, family, temperature;
     only the fixed entangler U_S differs).
 
-STORAGE  (one file per config, self-contained -- reproduce the datapoint from
-          the file alone, no re-derivation from seed rules)
+STORAGE  (one file PER CONFIG; FULLY SELF-CONTAINED -- reproduce the datapoint
+          from the file alone, no re-derivation from seed rules)
     data/runs/gibbs__N{N}__{model}__Jmean{J_mean}__Jstd{J_std}__{ansatz}__L{L}__
               {entangler}__realization_idx{r}__beta{beta}.npz
       -> kld (N_REAL,)               converged KLD per training seed
@@ -48,6 +50,7 @@ USAGE
     JAX_PLATFORMS=cpu GRID_N=10 ANSATZ=main N_DIS=10 \
         N_WORKERS=12 WORKER_ID=0 python3 run_gibbs.py
     (env: SG_MODEL, DISORDER_J_MEAN, DISORDER_J_STD, BETA_STEP, BETA_MAX, GIBBS_L)
+================================================================================
 """
 import os, sys, json, time
 os.environ.setdefault("N_REAL", "10")
@@ -72,7 +75,7 @@ MODEL      = os.environ.get("SG_MODEL", "SK")             # canonical spin glass
 J_MEAN     = float(os.environ.get("DISORDER_J_MEAN", "0.0"))   # J_0, ferromagnetic bias
 J_STD      = float(os.environ.get("DISORDER_J_STD", "1.0"))    # sigma_0, disorder strength
 N_DIS      = int(os.environ.get("N_DIS", "10"))           # disorder realizations, realization_idx 0..N_DIS-1
-FAMS       = ["clifford", "doped", "haar", "matchgate"]
+FAMS       = os.environ.get("GIBBS_FAMS", "clifford,doped,haar,matchgate").split(",")
 NT_DOPED   = 4                                            # T-gates for the doped-Clifford family
 BETA_STEP  = float(os.environ.get("BETA_STEP", "0.2"))
 BETA_MAX   = float(os.environ.get("BETA_MAX", "4.0"))
@@ -211,8 +214,8 @@ def main():
                         entangler_seed_base=int(R.BASE),
                         entangler_seed_rule="split(PRNGKey(BASE+991*fam_id+100*K+n_t), N_REAL); "
                                             "fam_id={haar:0,clifford:1,doped:2,matchgate:3}")
-            # Self-contained file: target, entangler, all angles and loss trajectory, so the
-            # datapoint reproduces without re-deriving anything from seed rules.
+            # FULLY SELF-CONTAINED FILE: everything needed to reproduce this datapoint without
+            # re-deriving anything from seed rules -- target, entangler, all angles, loss trajectory.
             np.savez(
                 path,
                 kld=klds,                                          # (N_REAL,) converged KLD per training seed
